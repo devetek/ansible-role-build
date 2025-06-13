@@ -19,8 +19,8 @@ build_id: 0
 build_appname: ""
 build_upload_artifact: false
 build_user: root
-build_destination: "~/"
-build_log: "~/logs/"
+build_destination: "/opt"
+build_log: "/va/log/"
 
 build_application:
 
