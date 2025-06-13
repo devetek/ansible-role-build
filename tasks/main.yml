@@ -1,0 +1,17 @@
+---
+- name: Read config application {{ build_appname }}
+  ansible.builtin.include_tasks: "readapp.yml"
+
+- name: Validate configuration
+  ansible.builtin.include_tasks: "validator.yml"
+
+- name: Switch binary version
+  ansible.builtin.include_tasks: "language/{{ build_language }}.yml"
+
+- name: No command executed, invalid config
+  ansible.builtin.include_tasks: "nosteps.yml"
+  when: build_steps_length == "0"
+
+- name: Build application in progress
+  ansible.builtin.include_tasks: "steps.yml"
+  when: build_steps_length != "0"

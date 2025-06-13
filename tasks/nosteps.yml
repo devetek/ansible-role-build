@@ -1,0 +1,3 @@
+- name: No tasks defined in the repository
+  ansible.builtin.debug:
+    msg: "no build task in repository or build contract invalid format"

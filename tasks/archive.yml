@@ -1,0 +1,23 @@
+---
+- name: generate build version from short git version
+  command: "git rev-parse --short HEAD"
+  register: build_default_version
+  args:
+    chdir: "{{ (build_destination, build_workdir) | path_join }}"
+
+- name: set app version
+  set_fact:
+    build_version: "{{ build_default_version.stdout }}"
+
+- name: join list of files and folder to be archived
+  set_fact:
+    archives: "{{ item.archive | join(' ') }}"
+
+- name: print list file and folder to archive
+  debug:
+    msg: "{{ archives }}"
+
+- name: archive content '{{ archives }}'
+  shell: "tar -zcvf go-example-{{ build_version }}.tar.gz {{ archives }}"
+  args:
+    chdir: "{{ (build_destination, build_workdir) | path_join }}"

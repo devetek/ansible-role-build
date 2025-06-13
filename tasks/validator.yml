@@ -1,0 +1,38 @@
+---
+# validate app language
+- name: Set app language
+  ansible.builtin.set_fact:
+    build_language: "{{ build_application.setup.language.name | default('') }}"
+
+# validate language version
+- name: Set language version
+  ansible.builtin.set_fact:
+    build_language_version: "{{ build_application.setup.language.version | default('') }}"
+
+# validate working directory
+- name: Set working directory
+  ansible.builtin.set_fact:
+    build_workdir: "{{ build_application.build.target.machine.workdir | default('') }}"
+
+# validate data steps
+- name: Set build steps
+  ansible.builtin.set_fact:
+    build_steps: "{{ build_application.build.target.machine.steps | default([]) }}"
+
+- name: Set build variables
+  ansible.builtin.set_fact:
+    build_variables: "{{ build_application.build.target.machine.environment | default([]) }}"
+
+# validate machine platform (arm / amd / etc)
+# use specific build based on target machine
+# help on build compiled language such as golang, rust, c++, scala, etc
+
+# validate step length is valid
+- name: Check fact 'build steps length'
+  ansible.builtin.set_fact:
+    build_steps_length: "{{ build_steps | length }}"
+
+# validate variable length step is valid
+- name: Check fact 'build steps length'
+  ansible.builtin.set_fact:
+    build_variables_length: "{{ build_variables | length }}"

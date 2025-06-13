@@ -1,0 +1,36 @@
+# All import* statements are pre-processed at the time playbooks are parsed.
+# All include* statements are processed as they encountered during the execution of the playbook.
+---
+- block:
+    # Create log directory
+    - name: Check if application log exist
+      stat:
+        path: "{{ build_log }}"
+      register: app_logdir
+
+    - name: "Create log directory if not exists"
+      file:
+        path: "{{ build_log }}"
+        state: directory
+        mode: u=rwX,g=rX,o=rX
+        group: "{{ build_user }}"
+        owner: "{{ build_user }}"
+      when: app_logdir.stat.exists == false
+    # Create log directory
+
+    # handle command on build
+    - name: Execute bash command
+      ansible.builtin.include_tasks: command.yml
+      when: item.cmd is not undefined or item.command is not undefined
+      with_items: "{{ build_steps }}"
+
+    # handle archive file
+    - name: Execute archive files and folders to tarball
+      ansible.builtin.include_tasks: archive.yml
+      when: build_upload_artifact is true and item.archive is not undefined
+      with_items: "{{ build_steps }}"
+
+    # TODO: upload artefact to dPanel artifact manager
+    # pass
+  become: true
+  become_user: "{{ build_user }}"

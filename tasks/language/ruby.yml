@@ -1,0 +1,4 @@
+---
+- name: Create related path for ruby
+  ansible.builtin.set_fact:
+    build_env_path: "/usr/local/rbenv/shims:/usr/local/rbenv/bin:{{ ansible_env.PATH }}"

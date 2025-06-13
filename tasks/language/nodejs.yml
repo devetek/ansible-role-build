@@ -1,0 +1,4 @@
+---
+- name: Create related path for nodejs
+  ansible.builtin.set_fact:
+    build_env_path: "/usr/local/nvm/versions/node/{{ build_language_version }}/bin:{{ ansible_env.PATH }}"

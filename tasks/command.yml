@@ -1,0 +1,47 @@
+---
+# Set dynamic variables
+- name: Serialize environment variables
+  ansible.builtin.set_fact:
+    serialize_build_environment_variables: "{{ serialize_build_environment_variables | default('') }} {{ item.key }}={{ item.value }}"
+  with_items: "{{ build_variables }}"
+  when: build_variables_length != "0"
+
+- name: Clean up build environment variables
+  ansible.builtin.set_fact:
+    build_environment_variables: "export {{ serialize_build_environment_variables | trim | default('') }} &&"
+  when: serialize_build_environment_variables is not undefined
+
+- name: Clean up build environment variables
+  ansible.builtin.set_fact:
+    build_environment_variables: ""
+  when: serialize_build_environment_variables is undefined
+
+- name: Prinv variable
+  debug:
+    msg: "Build variables from repository: {{ build_environment_variables }}"
+
+# shotrcut for command is defined
+- name: Run command with shotrcut CMD
+  shell: "{{ build_environment_variables }} {{ cmd }} >> {{ build_log }}/build-artifact-{{ build_id }}.log 2>&1"
+  with_items: "{{ item.cmd }}"
+  loop_control:
+    label: "{{ item.cmd }}"
+    loop_var: cmd
+  args:
+    chdir: "{{ (build_destination, build_workdir) | path_join }}"
+  environment:
+    PATH: "{{ build_env_path }}"
+  when: item.cmd is not undefined
+
+# V1
+- name: Run command with COMMAND
+  shell: "{{ build_environment_variables }} {{ command }} >> {{ build_log }}/build-artifact-{{ build_id }}.log 2>&1"
+  with_items: "{{ item.command }}"
+  loop_control:
+    label: "{{ item.command }}"
+    loop_var: command
+  args:
+    chdir: "{{ (build_destination, build_workdir) | path_join }}"
+  environment:
+    PATH: "{{ build_env_path }}"
+  when: item.command is not undefined

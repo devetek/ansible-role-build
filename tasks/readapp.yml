@@ -1,0 +1,21 @@
+---
+- name: Read application config from input
+  set_fact:
+    build_application: "{{ build_application_from_input }}"
+  when: build_application_from_input is defined
+
+- block:
+  - name: Read application config content
+    command: "cat {{ (build_destination, build_appname) | path_join }}"
+    register: build_app_content
+
+  - name: Application config serialization
+    set_fact:
+      build_application: "{{ build_app_content.stdout | from_yaml }}"
+  when:
+    - build_application.setup is undefined
+    - build_application.build is undefined
+
+- name: Print application remote config
+  debug:
+    msg: "{{ build_application }}"
